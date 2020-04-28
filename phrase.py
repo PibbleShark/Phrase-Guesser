@@ -1,14 +1,26 @@
-class PhraseGenerator:
-    import random
-    phrases = []
+from phraselist import phrases_original
 
-    def __init__(self, phrases=None):
-        assert isinstance(phrases, list)  # pycharm suggested this as a debugging tool
+
+class PhraseGenerator(str):
+    import random
+
+    def __init__(self, phrases):
+        super().__init__()
         self.phrases = phrases
 
-    def add_phrase(self, phrase):
-        self.phrases.append(phrase)
-
-    @property
-    def phrase_selector(self):
+    def rand_phrase(self):
         return self.random.choice(self.phrases)
+
+
+
+
+
+
+
+
+
+
+
+
+
+

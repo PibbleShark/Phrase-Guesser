@@ -42,7 +42,7 @@ phrases_original = [
     'Live and learn',
     'Look before you leap',
     'On thin ice',
-    'Once ins a blue moon',
+    'Once in a blue moon',
     'Slow and steady wins the race',
     'Spill the beans',
     'Take it with a grain of salt',

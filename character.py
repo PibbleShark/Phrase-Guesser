@@ -18,5 +18,5 @@ class Character:
         return ''.join(lst1)
 
 
-char_string = Character(PhraseGenerator(phrases_original).rand_phrase())
-print(char_string.replace_character('a', [3, 4]))
+#char_string = Character(PhraseGenerator(phrases_original).rand_phrase())
+#print(char_string.replace_character('a', [3, 4]))

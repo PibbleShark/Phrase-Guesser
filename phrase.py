@@ -1,5 +1,3 @@
-from phraselist import phrases_original
-
 
 class PhraseGenerator(str):
     import random
@@ -10,17 +8,3 @@ class PhraseGenerator(str):
 
     def rand_phrase(self):
         return self.random.choice(self.phrases)
-
-
-
-
-
-
-
-
-
-
-
-
-
-

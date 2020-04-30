@@ -3,7 +3,7 @@ phrases_original = [
     'A dime a dozen',
     'Beat around the bush',
     'Better late than never',
-    'Bite the bullet'
+    'Bite the bullet',
     'Break a leg',
     'Call it a day',
     'Cut me some slack',

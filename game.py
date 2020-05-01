@@ -52,14 +52,12 @@ class Game:
         return match
 
     def letter_guesser(self):
-
+        letters_guessed = []
         display_phrase = Character(self.phrase).display_length()
         new_display_phrase = copy.copy(display_phrase)
 
-
         while True:
-            letters_guessed = []
-            display_incorrect = 'Incorrect guessed letters: {}'.format(letters_guessed)
+
             print(f"""
                     Your phrase is:
                     {new_display_phrase} 
@@ -69,6 +67,7 @@ class Game:
 
             if letter_guessed == "SOLVE".lower():
                 self.phrase_guesser()
+                continue
 
             try:
                 letter_guessed = self.is_letter(letter_guessed)
@@ -85,26 +84,24 @@ class Game:
 
             character_indices = self.search_phrase(letter_guessed, self.phrase)
 
-            if self.number_of_trys == 5:
-                print("You're a loser")
-                self.play_again()
-
-            elif not character_indices:
+            if not character_indices:
                 self.number_of_trys += 1
-                letters_guessed.append(letter_guessed)
-                print('Sorry, there is no {}'.format(letter_guessed))
-                print(display_incorrect)
+                if self.number_of_trys == 5:
+                    print("You're a loser")
+                    self.play_again()
+                else:
+                    letters_guessed.append(letter_guessed)
+                    print('Sorry, there is no {}'.format(letter_guessed.upper()))
+                    print('Incorrect guessed letters: {}'.format(','.join(letters_guessed)))
 
             elif character_indices:
-                print("Yes, {} is in your phrase".format(letter_guessed))
-                print(display_incorrect)
+                print("Yes, {} is in your phrase".format(letter_guessed.upper()))
+                print('Incorrect guessed letters: {}'.format(','.join(letters_guessed)))
                 new_display_phrase = Character(new_display_phrase).replace_character(letter_guessed, character_indices)
 
             elif new_display_phrase == self.phrase:
                 print('You win!')
                 self.play_again()
-
-
 
     def phrase_guesser(self):
         guessed_phrase = input('complete the phrase:   ')
@@ -115,6 +112,7 @@ class Game:
         else:
             print('incorrect')
             self.number_of_trys += 1
+
 
     @staticmethod
     def play_again():

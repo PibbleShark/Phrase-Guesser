@@ -79,6 +79,13 @@ class Game:
                 if letter_guessed in letters_guessed:
                     raise ValueError
             except ValueError:
+                print("That was not right the first time")
+                continue
+
+            try:
+                if letter_guessed in new_display_phrase:
+                    raise ValueError
+            except ValueError:
                 print("You have already guessed that letter")
                 continue
 
@@ -92,28 +99,27 @@ class Game:
                 else:
                     letters_guessed.append(letter_guessed)
                     print('Sorry, there is no {}'.format(letter_guessed.upper()))
-                    print('Incorrect guessed letters: {}'.format(','.join(letters_guessed)))
+                    print('Incorrect guessed letters: {}'.format(','.join(letters_guessed)).upper())
 
             elif character_indices:
                 print("Yes, {} is in your phrase".format(letter_guessed.upper()))
-                print('Incorrect guessed letters: {}'.format(','.join(letters_guessed)))
                 new_display_phrase = Character(new_display_phrase).replace_character(letter_guessed, character_indices)
-                if new_display_phrase == self.phrase:
+                if new_display_phrase == self.phrase.lower():
                     print('You win!')
                     self.play_again()
                 else:
+                    print('Incorrect guessed letters: {}'.format(','.join(letters_guessed)).upper())
                     continue
 
     def phrase_guesser(self):
         guessed_phrase = input('complete the phrase:   ')
-        if guessed_phrase == self.phrase:
+        if guessed_phrase == self.phrase.lower():
             print('You win!')
             self.play_again()
 
         else:
             print('incorrect')
             self.number_of_trys += 1
-
 
     @staticmethod
     def play_again():

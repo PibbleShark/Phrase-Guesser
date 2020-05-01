@@ -1,6 +1,3 @@
-from phraselist import phrases_original
-from phrase import PhraseGenerator
-
 
 class Character:
 
@@ -16,6 +13,3 @@ class Character:
         for index in indices:
             lst1[index] = character
         return ''.join(lst1)
-
-# char_string = Character(PhraseGenerator(phrases_original).rand_phrase())
-# print(char_string.replace_character('a', [3, 4]))

@@ -1,5 +1,6 @@
 import sys
 import re
+import copy
 from phraselist import phrases_original
 from character import Character
 from phrase import PhraseGenerator
@@ -11,12 +12,12 @@ class Game:
         self.phrase = phrase
         self.number_of_trys = 0
         heading = f"""
-                {'~' * 40}
-                PHRASE GUESSING GAME!
-                {'/' * 40}
+                {'~' * 41}
+                {'<' * 9} PHRASE GUESSING GAME! {'>' * 9}
+                {'~' * 41}
                 """
         print(heading)
-        input("Press Enter to continue")
+        input("Press Enter for instructions")
         instructions = ("\n"
                         "Your job is to guess the phrase\n"
                         "You will be shown the length of the phrase with the letters hidden\n"
@@ -35,52 +36,75 @@ class Game:
 
     @staticmethod
     def is_letter(test_string):
-        letter = re.match(r'^[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]+$', test_string)
+        if len(test_string) > 1:
+            raise ValueError
+        else:
+            letter = re.match(r'^[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]+$', test_string)
         if letter is None:
             raise ValueError
+        return test_string
         # adapted from Martin Thoma on stack overflow
         # https://stackoverflow.com/questions/18667410/how-can-i-check-if-a-string-only-contains-letters-in-python
 
-    def search_phrase(self, string, letter):
-        match = [self.phrase.start() for _ in re.finditer(letter, string)]
+    @staticmethod
+    def search_phrase(letter, string):
+        match = [character.start() for character in re.finditer(letter.lower(), string.lower())]
         return match
 
     def letter_guesser(self):
-        letters_guessed = []
-        display_phrase = f"""
-        Your phrase is:
-        {self.phrase} 
-        """
-        print(display_phrase)
+
+        display_phrase = Character(self.phrase).display_length()
+        new_display_phrase = copy.copy(display_phrase)
+
+
         while True:
+            letters_guessed = []
+            display_incorrect = 'Incorrect guessed letters: {}'.format(letters_guessed)
+            print(f"""
+                    Your phrase is:
+                    {new_display_phrase} 
+                    """)
+
             letter_guessed = input('Guess a letter:  ')
+
+            if letter_guessed == "SOLVE".lower():
+                self.phrase_guesser()
+
             try:
                 letter_guessed = self.is_letter(letter_guessed)
-                if letter_guessed != 'SOLVE'.lower() and len(letter_guessed) > 1:
-                    raise ValueError
             except ValueError:
                 print("That is not a letter")
                 continue
 
-            # need to make sure that I accept letter or phrases
+            try:
+                if letter_guessed in letters_guessed:
+                    raise ValueError
+            except ValueError:
+                print("You have already guessed that letter")
+                continue
 
-            if letter_guessed is not None:
-                character_indices = self.search_phrase(self.phrase, letter_guessed)
-                Character(self.phrase).replace_character(letter_guessed, character_indices)
+            character_indices = self.search_phrase(letter_guessed, self.phrase)
 
-            elif letter_guessed == "SOLVE".lower():
-                self.phrase_guesser()
-
-            elif letter_guessed is None:
-                self.number_of_trys += 1
-                letters_guessed.append(letter_guessed)
-                letters_guessed = ' ,'.join([letter for letter in letters_guessed])
-                print('Sorry, there is no {}'.format(letter_guessed))
-                print('So far you have guessed {}'.format(' ,'.join(letters_guessed)))
-
-            elif self.number_of_trys >= 5:
+            if self.number_of_trys == 5:
                 print("You're a loser")
                 self.play_again()
+
+            elif not character_indices:
+                self.number_of_trys += 1
+                letters_guessed.append(letter_guessed)
+                print('Sorry, there is no {}'.format(letter_guessed))
+                print(display_incorrect)
+
+            elif character_indices:
+                print("Yes, {} is in your phrase".format(letter_guessed))
+                print(display_incorrect)
+                new_display_phrase = Character(new_display_phrase).replace_character(letter_guessed, character_indices)
+
+            elif new_display_phrase == self.phrase:
+                print('You win!')
+                self.play_again()
+
+
 
     def phrase_guesser(self):
         guessed_phrase = input('complete the phrase:   ')
@@ -103,8 +127,8 @@ class Game:
 
     @classmethod
     def reset(cls):
-        pass
+        Game(PhraseGenerator(phrases_original).rand_phrase())
 
 
 if __name__ == "__main__":
-    Game(PhraseGenerator(phrases_original))
+    Game(PhraseGenerator(phrases_original).rand_phrase())

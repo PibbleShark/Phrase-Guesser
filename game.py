@@ -98,10 +98,11 @@ class Game:
                 print("Yes, {} is in your phrase".format(letter_guessed.upper()))
                 print('Incorrect guessed letters: {}'.format(','.join(letters_guessed)))
                 new_display_phrase = Character(new_display_phrase).replace_character(letter_guessed, character_indices)
-
-            elif new_display_phrase == self.phrase:
-                print('You win!')
-                self.play_again()
+                if new_display_phrase == self.phrase:
+                    print('You win!')
+                    self.play_again()
+                else:
+                    continue
 
     def phrase_guesser(self):
         guessed_phrase = input('complete the phrase:   ')

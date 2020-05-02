@@ -4,22 +4,11 @@ import re
 class Character:
 
     def __init__(self, character):
-        super().__init__()
         self.character = character
-        self.letters_guessed = []
-        self.letters_guessed.append(self.character)
-        # letter guessed are stored here for the sake of the assignment
-        # I don't really use this complete list at any point in my game class
-
-    def display_letters(self):
-        return self.letters_guessed
 
     @staticmethod
     def display_letter_string(lst):
         return ','.join(lst).upper()
-
-    #def add_letter(self):
-        #self.letters_guessed.append(self.character)
 
     def replace_character(self, string, indices):
         lst1 = list(string)

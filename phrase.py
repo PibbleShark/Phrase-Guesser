@@ -1,10 +1,14 @@
+from character import Character
 
-class PhraseGenerator(str):
-    import random
 
-    def __init__(self, phrases):
+class Phrase(str):
+
+    def __init__(self, phrase):
         super().__init__()
-        self.phrases = phrases
+        self.phrase = phrase
+        self.phrase_finished = [Character(letter) for letter in phrase]
 
-    def rand_phrase(self):
-        return self.random.choice(self.phrases)
+    def display_length(self):
+        split_phrase = self.phrase.split(' ')
+        return ' '.join(['_' * len(word) for word in split_phrase])
+

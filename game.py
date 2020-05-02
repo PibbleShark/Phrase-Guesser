@@ -1,16 +1,17 @@
 import sys
-import re
 import copy
 from phraselist import phrases_original
 from character import Character
-from phrase import PhraseGenerator
+from phrase import Phrase
 
 
 class Game:
+    import random
 
-    def __init__(self, phrase):
-        self.phrase = phrase
+    def __init__(self, phrase_list):
+        self.phrase = self.random.choice(phrase_list)
         self.number_of_trys = 0
+
         heading = f"""
                 {'~' * 41}
                 {'<' * 9} PHRASE GUESSING GAME! {'>' * 9}
@@ -34,26 +35,9 @@ class Game:
         input("Press Enter to continue")
         self.letter_guesser()
 
-    @staticmethod
-    def is_letter(test_string):
-        if len(test_string) > 1:
-            raise ValueError
-        else:
-            letter = re.match(r'^[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]+$', test_string)
-        if letter is None:
-            raise ValueError
-        return test_string
-        # adapted from Martin Thoma on stack overflow
-        # https://stackoverflow.com/questions/18667410/how-can-i-check-if-a-string-only-contains-letters-in-python
-
-    @staticmethod
-    def search_phrase(letter, string):
-        match = [character.start() for character in re.finditer(letter.lower(), string.lower())]
-        return match
-
     def letter_guesser(self):
-        letters_guessed = []
-        display_phrase = Character(self.phrase).display_length()
+        incorrect_letters = []
+        display_phrase = Phrase(self.phrase).display_length()
         new_display_phrase = copy.copy(display_phrase)
 
         while True:
@@ -70,13 +54,13 @@ class Game:
                 continue
 
             try:
-                letter_guessed = self.is_letter(letter_guessed)
+                letter_guessed = Character(letter_guessed).is_letter()
             except ValueError:
                 print("That is not a letter")
                 continue
 
             try:
-                if letter_guessed in letters_guessed:
+                if letter_guessed in incorrect_letters:
                     raise ValueError
             except ValueError:
                 print("That was not right the first time")
@@ -89,26 +73,29 @@ class Game:
                 print("You have already guessed that letter")
                 continue
 
-            character_indices = self.search_phrase(letter_guessed, self.phrase)
+            character_indices = Character(letter_guessed).search_phrase(self.phrase)
+            Character(letter_guessed)
+            # here I store the letter.  This is because the assignment asked me to store the letter.
+            # the search function that I created doesn't require such a list.
 
             if not character_indices:
+                incorrect_letters.append(letter_guessed)
                 self.number_of_trys += 1
                 if self.number_of_trys == 5:
                     print("You're a loser")
                     self.play_again()
                 else:
-                    letters_guessed.append(letter_guessed)
                     print('Sorry, there is no {}'.format(letter_guessed.upper()))
-                    print('Incorrect guessed letters: {}'.format(','.join(letters_guessed)).upper())
+                    print('Incorrect guessed letters: {}'.format(Character.display_letter_string(incorrect_letters)))
 
             elif character_indices:
-                print("Yes, {} is in your phrase".format(letter_guessed.upper()))
-                new_display_phrase = Character(new_display_phrase).replace_character(letter_guessed, character_indices)
+                print("Yes, {} is in your phrase".format(letter_guessed).upper())
+                new_display_phrase = Character(letter_guessed).replace_character(new_display_phrase, character_indices)
                 if new_display_phrase == self.phrase.lower():
                     print('You win!')
                     self.play_again()
                 else:
-                    print('Incorrect guessed letters: {}'.format(','.join(letters_guessed)).upper())
+                    print('Incorrect guessed letters: {}'.format(Character.display_letter_string(incorrect_letters)))
                     continue
 
     def phrase_guesser(self):
@@ -132,8 +119,5 @@ class Game:
 
     @classmethod
     def reset(cls):
-        Game(PhraseGenerator(phrases_original).rand_phrase())
+        Game(phrases_original)
 
-
-if __name__ == "__main__":
-    Game(PhraseGenerator(phrases_original).rand_phrase())

@@ -4,8 +4,9 @@
  phraselist.py is just a list of phrases that my program will use
     it can be changed if we would like to add or subtract phrases from the game
     
- phrase.py contains the class PhraseGenerator.  It takes a list and can choose a random string from it.  It's output is a string.
+ phrase.py contains the class Phrase.  It takes a phrase an converts it into a series of underscores that correspond to the letters in the phrase. 
  
- caracter.py contains the class Character.  I can use it to display my phrase as a series of underscores that represent the length of the phrase.  It also has a method to take the class argument string and output a new string with its characters altered based on a list of indices.
- 
- game.py contains the execution of the game in the class Game.  It primarily consists of a while loop that takes letters and determines if they are in the generated phrase.  It allows you to win by trying to solve the puzzle or by filling in all of the letters.  It contains a static method that checks if input is a single letter using a regex match.  It contains another static function that returns a list of indices representing the locations of any input letter in a string.  I have also created a method for solving the puzzle and a class method to reset the class and play again.     
+character.py includes all of my logic dealing with the individual characters in the program.  It includes a method to check if a letter guessed is a letter.  It also has logic to iterate through a string and return indices in which a character is can be found.  
+
+game.py contains the operation of the game which is mostly contained in one while loop.  Since my function returns indices of the location of a letter in the string, I use conditional statements to check if those indices are preset rather than using a boolean statement.  It keeps a running list of tries and failed guesses as well as updates my displayed string with the correctly guessed letters. It also include methods to guess the phrase and a method to restart the game.  
+  

@@ -1,14 +1,13 @@
 import re
 
 
-class Character:
+class Character(str):
+    correct_characters = []
+    incorrect_characters = []
 
     def __init__(self, character):
+        super().__init__()
         self.character = character
-
-    @staticmethod
-    def display_letter_string(lst):
-        return ','.join(lst).upper()
 
     def replace_character(self, string, indices):
         lst1 = list(string)
@@ -26,5 +25,24 @@ class Character:
         else:
             letter = re.match(r'^[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]+$', self.character)
         if letter is None:
-            raise ValueError
-        return self.character
+            return False
+        else:
+            return True
+
+    def correct_characters_append(self):
+        return self.correct_characters.append(self.character)
+
+    def incorrect_characters_append(self):
+        return self.incorrect_characters.append(self.character)
+
+    def validate_input(self):
+        self.is_letter()
+        if not self.is_letter():
+            raise ValueError("That is not a letter")
+
+        elif self.character in self.incorrect_characters:
+            raise ValueError("That was not right the first time")
+
+        elif self.character in self.correct_characters:
+            raise ValueError("You have already guessed that letter")
+

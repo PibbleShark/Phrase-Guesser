@@ -1,24 +1,26 @@
 import sys
-import copy
 from phraselist import phrases_original
 from character import Character
 from phrase import Phrase
 
 
+# noinspection PyUnboundLocalVariable
 class Game:
     import random
 
     def __init__(self, phrase_list):
         self.phrase = self.random.choice(phrase_list)
-        self.number_of_trys = 0
+        self.number_of_tries = 5
 
+    def begin_game(self):
         heading = f"""
                 {'~' * 41}
                 {'<' * 9} PHRASE GUESSING GAME! {'>' * 9}
                 {'~' * 41}
                 """
         print(heading)
-        input("Press Enter for instructions")
+        see_instructions = input("enter 'i' for instructions or press enter to continue").lower()
+
         instructions = ("\n"
                         "Your job is to guess the phrase\n"
                         "You will be shown the length of the phrase with the letters hidden\n"
@@ -31,93 +33,78 @@ class Game:
                         "Guess the phrase correctly before you receive 5 strikes.  \n"
                         "If you do, You win!\n"
                         "if you don't, You're a loser!\n")
-        print(instructions)
-        input("Press Enter to continue")
-        self.letter_guesser()
+
+        if see_instructions == 'i':
+            print(instructions)
+            input("Press Enter to continue")
+            self.letter_guesser()
+        else:
+            self.letter_guesser()
 
     def letter_guesser(self):
-        incorrect_letters = []
-        display_phrase = Phrase(self.phrase).display_length()
-        new_display_phrase = copy.copy(display_phrase)
 
+        loop_phrase = Phrase(self.phrase).display_length
         while True:
+
+            already_guessed = 'guessed letters: '
 
             print(f"""
                     Your phrase is:
-                    {new_display_phrase} 
+                    {loop_phrase.capitalize()} 
+                    you have {self.number_of_tries} guesses remaining
+                    {already_guessed}{', '.join(Character.incorrect_characters).upper()}
                     """)
 
             letter_guessed = input('Guess a letter:  ')
 
             if letter_guessed == "SOLVE".lower():
-                self.phrase_guesser()
-                continue
-
+                answer = Phrase(self.phrase).phrase_guesser()
+                if answer:
+                    self.play_again()
+                else:
+                    self.number_of_tries -= 1
+                    continue
             try:
-                letter_guessed = Character(letter_guessed).is_letter()
-            except ValueError:
-                print("That is not a letter")
+                Character(letter_guessed).validate_input()
+            except ValueError as err:
+                print(err)
                 continue
 
-            try:
-                if letter_guessed in incorrect_letters:
-                    raise ValueError
-            except ValueError:
-                print("That was not right the first time")
-                continue
-
-            try:
-                if letter_guessed in new_display_phrase:
-                    raise ValueError
-            except ValueError:
-                print("You have already guessed that letter")
-                continue
-
-            character_indices = Character(letter_guessed).search_phrase(self.phrase)
-            Character(letter_guessed)
-            # here I store the letter.  This is because the assignment asked me to store the letter.
-            # the search function that I created doesn't require such a list.
+            else:
+                character_indices = Character(letter_guessed).search_phrase(self.phrase)
 
             if not character_indices:
-                incorrect_letters.append(letter_guessed)
-                self.number_of_trys += 1
-                if self.number_of_trys == 5:
+                Character(letter_guessed).incorrect_characters_append()
+                self.number_of_tries -= 1
+                if self.number_of_tries == 0:
                     print("You're a loser")
                     self.play_again()
                 else:
                     print('Sorry, there is no {}'.format(letter_guessed.upper()))
-                    print('Incorrect guessed letters: {}'.format(Character.display_letter_string(incorrect_letters)))
 
             elif character_indices:
-                print("Yes, {} is in your phrase".format(letter_guessed).upper())
-                new_display_phrase = Character(letter_guessed).replace_character(new_display_phrase, character_indices)
-                if new_display_phrase == self.phrase.lower():
-                    print('You win!')
+                Character(letter_guessed).correct_characters_append()
+                print("Yes, {} is in your phrase".format(letter_guessed.upper()))
+                loop_phrase = Character(letter_guessed).replace_character(loop_phrase, character_indices)
+                if Phrase(self.phrase).phrase_match(loop_phrase):
                     self.play_again()
-                else:
-                    print('Incorrect guessed letters: {}'.format(Character.display_letter_string(incorrect_letters)))
-                    continue
 
-    def phrase_guesser(self):
-        guessed_phrase = input('complete the phrase:   ')
-        if guessed_phrase == self.phrase.lower():
-            print('You win!')
-            self.play_again()
+    def play_again(self):
+        while True:
 
-        else:
-            print('incorrect')
-            self.number_of_trys += 1
+            again = input('Would you like to play again? [y]es or [n]o.    ').lower()
+            if again == ('NO'.lower()) or again == ('N'.lower()):
+                sys.exit('Good day')
+
+            elif again == ('YES'.lower()) or again == ('Y'.lower()):
+                self.reset()
+
+            else:
+                print('that is not a valid entry')
 
     @staticmethod
-    def play_again():
-        again = input('Would you like to play again? [y]es or [n]o.    ')
-        if again == ('NO'.lower()) or again == ('N'.lower()):
-            sys.exit('Good day')
+    def reset():
+        new_game = Game(phrases_original)
+        return new_game.begin_game()
 
-        elif again == ('YES'.lower()) or again == ('Y'.lower()):
-            Game.reset()
-
-    @classmethod
-    def reset(cls):
-        Game(phrases_original)
-
+    # play again or reset is not working properly

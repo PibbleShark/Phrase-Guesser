@@ -4,13 +4,14 @@ from character import Character
 from phrase import Phrase
 
 
-# noinspection PyUnboundLocalVariable
 class Game:
+    """Game takes the components of the Character and Phrase classes and runs through the steps of the guessing game.
+    it also contains a function to reset the game to play again"""
     import random
 
     def __init__(self, phrase_list):
         self.phrase = self.random.choice(phrase_list)
-        self.number_of_tries = 5
+        self.number_of_tries = 0
 
     def begin_game(self):
         heading = f"""
@@ -46,23 +47,21 @@ class Game:
         loop_phrase = Phrase(self.phrase).display_length
         while True:
 
-            already_guessed = 'guessed letters: '
-
             print(f"""
                     Your phrase is:
                     {loop_phrase.capitalize()} 
-                    you have {self.number_of_tries} guesses remaining
-                    {already_guessed}{', '.join(Character.incorrect_characters).upper()}
+                    Strikes: {'X' * self.number_of_tries}
+                    Guessed Letters: {', '.join(Character.incorrect_characters).upper()}
                     """)
 
             letter_guessed = input('Guess a letter:  ')
 
-            if letter_guessed == "SOLVE".lower():
+            if letter_guessed.lower() == "SOLVE".lower():
                 answer = Phrase(self.phrase).phrase_guesser()
                 if answer:
                     self.play_again()
                 else:
-                    self.number_of_tries -= 1
+                    self.number_of_tries += 1
                     continue
             try:
                 Character(letter_guessed).validate_input()
@@ -75,8 +74,8 @@ class Game:
 
             if not character_indices:
                 Character(letter_guessed).incorrect_characters_append()
-                self.number_of_tries -= 1
-                if self.number_of_tries == 0:
+                self.number_of_tries += 1
+                if self.number_of_tries == 5:
                     print("You're a loser")
                     self.play_again()
                 else:
@@ -87,6 +86,7 @@ class Game:
                 print("Yes, {} is in your phrase".format(letter_guessed.upper()))
                 loop_phrase = Character(letter_guessed).replace_character(loop_phrase, character_indices)
                 if Phrase(self.phrase).phrase_match(loop_phrase):
+                    print('{} is correct'.format(loop_phrase.capitalize()))
                     self.play_again()
 
     def play_again(self):
@@ -104,7 +104,7 @@ class Game:
 
     @staticmethod
     def reset():
+        Character.incorrect_characters = []
+        Character.correct_characters = []
         new_game = Game(phrases_original)
         return new_game.begin_game()
-
-    # play again or reset is not working properly

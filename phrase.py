@@ -2,6 +2,9 @@ from character import Character
 
 
 class Phrase(str):
+    """Phrase takes a phrase, converts it into a set of Character objects and can turn it into a string of underscores
+    to hide the letters it contains.
+    It also is used to check for a correct answer in the phrase guessing game."""
 
     def __init__(self, phrase):
         super().__init__()
@@ -29,6 +32,5 @@ class Phrase(str):
 
     def phrase_match(self, string):
         if self.string_phrase.upper() == string.upper():
-            print('Your Win!')
+            print('You Win!')
             return True
-

@@ -2,6 +2,9 @@ import re
 
 
 class Character(str):
+    """Character takes a character and stores it.  It can then check that a character is a single letter and stores
+    guessed letters as correct or incorrect.  It also has a method for displaying a correctly guessed letter in the
+    string of underscores created by the Phrase class"""
     correct_characters = []
     incorrect_characters = []
 
@@ -36,6 +39,9 @@ class Character(str):
         return self.incorrect_characters.append(self.character)
 
     def validate_input(self):
+        if len(self.character) > 1:
+            raise ValueError("Looking for a single letter")
+
         self.is_letter()
         if not self.is_letter():
             raise ValueError("That is not a letter")

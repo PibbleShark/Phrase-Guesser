@@ -11,7 +11,6 @@ phrases_original = [
     'Back to the drawing board',
     'Hang in there',
     'Hit the sack',
-    'No pain, no gain',
     'On the ball',
     'Speak of the devil',
     'So far so good',

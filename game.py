@@ -1,4 +1,5 @@
 import sys
+from random import random
 from phraselist import phrases_original
 from character import Character
 from phrase import Phrase
@@ -7,13 +8,13 @@ from phrase import Phrase
 class Game:
     """Game takes the components of the Character and Phrase classes and runs through the steps of the guessing game.
     it also contains a function to reset the game to play again"""
-    import random
 
-    def __init__(self, phrase_list):
-        self.phrase = self.random.choice(phrase_list)
-        self.number_of_tries = 0
+    def __init__(self, phrases):
+        self.phrases = [Phrase(phrase) for phrase in phrases]
+        self.number_of_tries = 5
 
     def begin_game(self):
+        selected_phrase = random.choice(self.phrases)
         heading = f"""
                 {'~' * 41}
                 {'<' * 9} PHRASE GUESSING GAME! {'>' * 9}
@@ -44,7 +45,6 @@ class Game:
 
     def letter_guesser(self):
 
-        loop_phrase = Phrase(self.phrase).display_length
         while True:
 
             print(f"""
@@ -61,7 +61,7 @@ class Game:
                 if answer:
                     self.play_again()
                 else:
-                    self.number_of_tries += 1
+                    self.number_of_tries -= 1
                     continue
             try:
                 Character(letter_guessed).validate_input()
@@ -74,8 +74,8 @@ class Game:
 
             if not character_indices:
                 Character(letter_guessed).incorrect_characters_append()
-                self.number_of_tries += 1
-                if self.number_of_tries == 5:
+                self.number_of_tries -= 1
+                if self.number_of_tries == 0:
                     print("You're a loser")
                     self.play_again()
                 else:

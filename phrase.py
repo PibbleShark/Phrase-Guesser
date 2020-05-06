@@ -1,36 +1,39 @@
 from character import Character
 
 
-class Phrase(str):
+class Phrase:
     """Phrase takes a phrase, converts it into a set of Character objects and can turn it into a string of underscores
     to hide the letters it contains.
     It also is used to check for a correct answer in the phrase guessing game."""
 
     def __init__(self, phrase):
-        super().__init__()
         self.phrase = [Character(letter) for letter in phrase]
-        self.string_phrase = ''.join(self.phrase)
+        self.phrase_string = ''.join(self.phrase)
+        self.phrase_letter_list = []
+        for character in self.phrase:
+            if character.is_letter:
+                self.phrase_letter_list.append(character.lower())
 
-    @property
-    def display_length(self):
-        phrase_ = []
+    def display_phrase(self):
         for letter in self.phrase:
-            if letter.is_letter():
-                phrase_.append('_')
+            if letter.is_letter:
+                if not letter.correct_character:
+                    letter.hide_character()
+        return ''.join(self.phrase)
+
+    def match_character(self, letter):
+        for character in self.phrase:
+            if character.lower() == letter.lower():
+                Character.correct_characters.append(letter.lower)
             else:
-                phrase_.append(' ')
-        return ''.join(phrase_)
-        
-    def phrase_guesser(self):
-        guessed_phrase = input('complete the phrase:   ')
-        if guessed_phrase.upper() == self.string_phrase.upper():
-            print('You win!')
+                Character.incorrect_characters.append(letter.lower)
+
+    def phrase_guess(self, guessed_phrase):
+        self.phrase = [character for character in self.phrase]
+        return all(list(guessed_phrase.capitalize()))
+
+    def phrase_match(self):
+        if self.phrase_letter_list == Character.correct_characters:
             return True
         else:
-            print('incorrect')
             return False
-
-    def phrase_match(self, string):
-        if self.string_phrase.upper() == string.upper():
-            print('You Win!')
-            return True

@@ -2,38 +2,34 @@ from character import Character
 
 
 class Phrase:
-    """Phrase takes a phrase, converts it into a set of Character objects and can turn it into a string of underscores
-    to hide the letters it contains.
+    """Phrase takes a phrase, converts it into a set of Character objects and can display the characters.
+    It has a method to see if a given character is present in the phrase.
     It also is used to check for a correct answer in the phrase guessing game."""
 
     def __init__(self, phrase):
         self.phrase = [Character(letter) for letter in phrase]
-        self.phrase_string = ''.join(self.phrase)
-        self.phrase_letter_list = []
-        for character in self.phrase:
-            if character.is_letter:
-                self.phrase_letter_list.append(character.lower())
 
     def display_phrase(self):
-        for letter in self.phrase:
-            if letter.is_letter:
-                if not letter.correct_character:
-                    letter.hide_character()
-        return ''.join(self.phrase)
-
-    def match_character(self, letter):
+        display_phrase = []
         for character in self.phrase:
-            if character.lower() == letter.lower():
-                Character.correct_characters.append(letter.lower)
-            else:
-                Character.incorrect_characters.append(letter.lower)
+            display_phrase.append(character.display_character())
+        return ' '.join(display_phrase)
+
+    def search_phrase(self, letter):
+        for character in self.phrase:
+            if str(character) == letter:
+                character.add_correct()
+                return True
 
     def phrase_guess(self, guessed_phrase):
-        self.phrase = [character for character in self.phrase]
-        return all(list(guessed_phrase.capitalize()))
-
-    def phrase_match(self):
-        if self.phrase_letter_list == Character.correct_characters:
+        if guessed_phrase.lower() == ''.join(self.phrase).lower():
             return True
         else:
             return False
+
+    def phrase_match(self):
+        if self.display_phrase().lower() == ' '.join(self.phrase).lower():
+            return True
+        else:
+            return False
+

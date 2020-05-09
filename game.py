@@ -1,20 +1,23 @@
 import sys
-from random import random
+import random
 from phraselist import phrases_original
 from character import Character
 from phrase import Phrase
 
 
 class Game:
-    """Game takes the components of the Character and Phrase classes and runs through the steps of the guessing game.
-    it also contains a function to reset the game to play again"""
+    """Game stores a list of phrases as Phrase objects.  It chooses a phrase at random to use in the running of the game.
+    It handles taking an input, checking that it is an acceptable.  Once the other phrase class has checked the input
+    for correctness, the game class either continues to loop though the game or it allows the phrase class to declare
+    a win.  An option to play again either ends the program or performs a reset."""
 
     def __init__(self, phrases):
         self.phrases = [Phrase(phrase) for phrase in phrases]
         self.number_of_tries = 5
+        self.selected_phrase = random.choice(self.phrases)
 
     def begin_game(self):
-        selected_phrase = random.choice(self.phrases)
+
         heading = f"""
                 {'~' * 41}
                 {'<' * 9} PHRASE GUESSING GAME! {'>' * 9}
@@ -44,50 +47,63 @@ class Game:
             self.letter_guesser()
 
     def letter_guesser(self):
-
+        incorrect_guesses = []
         while True:
+            display_phrase = self.selected_phrase.display_phrase()
 
             print(f"""
                     Your phrase is:
-                    {loop_phrase.capitalize()} 
-                    Strikes: {'X' * self.number_of_tries}
-                    Guessed Letters: {', '.join(Character.incorrect_characters).upper()}
+                    {display_phrase} 
+                    Attempts Remaining: {'X' * self.number_of_tries}
+                    Guessed Letters: {', '.join(incorrect_guesses)}
                     """)
 
             letter_guessed = input('Guess a letter:  ')
 
             if letter_guessed.lower() == "SOLVE".lower():
-                answer = Phrase(self.phrase).phrase_guesser()
+                guessed_phrase = input('Guess the phrase:  ')
+                answer = self.selected_phrase.phrase_guess(guessed_phrase)
                 if answer:
+                    print('You win')
                     self.play_again()
                 else:
+                    print('Incorrect')
                     self.number_of_tries -= 1
                     continue
+
             try:
-                Character(letter_guessed).validate_input()
+                if len(letter_guessed) > 1:
+                    raise ValueError("Looking for a single letter")
+
+                elif not letter_guessed.isalpha():
+                    raise ValueError("That is not a letter")
+
+                elif letter_guessed.upper() in incorrect_guesses:
+                    raise ValueError("That was not right the first time")
+
+                elif letter_guessed in display_phrase:
+                    raise ValueError("You have already guessed that letter")
             except ValueError as err:
                 print(err)
                 continue
 
-            else:
-                character_indices = Character(letter_guessed).search_phrase(self.phrase)
+            match = self.selected_phrase.search_phrase(letter_guessed.lower())
 
-            if not character_indices:
-                Character(letter_guessed).incorrect_characters_append()
+            if match:
+                print("Yes, {} is in your phrase".format(letter_guessed.upper()))
+                phrase_match = self.selected_phrase.phrase_match()
+                if phrase_match:
+                    print('You completed the phrase and won!')
+                    self.play_again()
+
+            else:
                 self.number_of_tries -= 1
+                incorrect_guesses.append(letter_guessed.upper())
                 if self.number_of_tries == 0:
                     print("You're a loser")
                     self.play_again()
                 else:
                     print('Sorry, there is no {}'.format(letter_guessed.upper()))
-
-            elif character_indices:
-                Character(letter_guessed).correct_characters_append()
-                print("Yes, {} is in your phrase".format(letter_guessed.upper()))
-                loop_phrase = Character(letter_guessed).replace_character(loop_phrase, character_indices)
-                if Phrase(self.phrase).phrase_match(loop_phrase):
-                    print('{} is correct'.format(loop_phrase.capitalize()))
-                    self.play_again()
 
     def play_again(self):
         while True:
@@ -104,7 +120,6 @@ class Game:
 
     @staticmethod
     def reset():
-        Character.incorrect_characters = []
         Character.correct_characters = []
         new_game = Game(phrases_original)
         return new_game.begin_game()

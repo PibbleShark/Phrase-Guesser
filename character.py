@@ -1,43 +1,21 @@
-import re
 
 
 class Character(str):
-    """Character takes a character and stores it.  It can then check that a character is a single letter and stores
-    guessed letters as correct or incorrect.  It also has a method for displaying a correctly guessed letter in the
-    string of underscores created by the Phrase class"""
+    """Character takes a character and stores it. It works with the Phrase class to store correctly guessed letters.
+    a character object will display as an _ until that character has been correctly guessed."""
     correct_characters = []
-    incorrect_characters = []
 
     def __init__(self, character):
         super().__init__()
-        self.character = character
+        self.character = character.lower()
 
-    def hide_character(self):
-        self.character = " _ "
+    def display_character(self, ):
+        if self.character in self.correct_characters:
+            return self.character.upper()
+        elif self.character != ' ' and self.character not in self.correct_characters:
+            return '_'
+        elif self.character == ' ':
+            return ' '
 
-    def is_letter(self):
-        letter = re.match(r'^[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]+$', self.character)
-        if not letter:
-            raise ValueError("That is not a letter")
-        else:
-            return letter
-
-    def correct_character(self):
-        if self.character.lower() in self.correct_characters:
-            self.character = True
-        else:
-            self.character = False
-
-    def validate_character(self):
-        if len(self.character) > 1:
-            raise ValueError("Looking for a single letter")
-
-        self.is_letter()
-        if not self.is_letter():
-            raise ValueError("That is not a letter")
-
-        elif self.character in self.incorrect_characters:
-            raise ValueError("That was not right the first time")
-
-        elif self.character in self.correct_characters:
-            raise ValueError("You have already guessed that letter")
+    def add_correct(self):
+        return self.correct_characters.append(self.character.lower())

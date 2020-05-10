@@ -17,7 +17,7 @@ class Phrase:
 
     def search_phrase(self, letter):
         for character in self.phrase:
-            if str(character) == letter:
+            if str(character).upper() == letter.upper():
                 character.add_correct()
                 return True
 

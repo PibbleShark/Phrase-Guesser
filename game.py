@@ -87,7 +87,7 @@ class Game:
                 print(err)
                 continue
 
-            match = self.selected_phrase.search_phrase(letter_guessed.lower())
+            match = self.selected_phrase.search_phrase(letter_guessed)
 
             if match:
                 print("Yes, {} is in your phrase".format(letter_guessed.upper()))
